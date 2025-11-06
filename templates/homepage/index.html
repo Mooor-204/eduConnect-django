@@ -145,9 +145,17 @@
         <nav class="navbar">
             <div class="logo">EduConnect Egypt</div>
             <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/auth/login/">Login</a></li>
-                <li><a href="/auth/signup/">Sign Up</a></li>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="#">Welcome, {{ user.username }}!</a></li>
+                    {% if user.is_staff or user.is_superuser %}
+                        <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                {% endif %}
             </ul>
         </nav>
     </header>
@@ -156,7 +164,11 @@
         <div class="hero-content">
             <h1>Find Your Perfect University</h1>
             <p>EduConnect Egypt helps students discover universities and faculties that match their academic performance and interests.</p>
-            <a href="/auth/signup/" class="cta-button">Get Started Today</a>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'signup' %}" class="cta-button">Get Started Today</a>
+            {% else %}
+                <a href="/universities/" class="cta-button">Browse Universities</a>
+            {% endif %}
         </div>
     </section>
 
