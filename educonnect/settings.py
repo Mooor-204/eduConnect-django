@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'homepage',      # ← ADD THIS
     'auth_app',      # ← ADD THIS
     'universities',  # ← ADD THIS
+    'calculation',
 ]
 
 MIDDLEWARE = [

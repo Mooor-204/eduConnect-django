@@ -146,6 +146,7 @@
             <div class="logo">EduConnect Egypt</div>
             <ul class="nav-links">
                 <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'calculation:calculator_home' %}">Eligibility Calculator</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="#">Welcome, {{ user.username }}!</a></li>
                     {% if user.is_staff or user.is_superuser %}
@@ -180,7 +181,7 @@
                 <h3>University Database</h3>
                 <p>Access comprehensive information about Egyptian universities and their faculties.</p>
             </div>
-            <div class="feature-card">
+                <div class="feature-card" onclick="location.href='{% url 'calculation:calculator_home' %}';" style="cursor: pointer;">
                 <div class="feature-icon">📊</div>
                 <h3>Eligibility Calculator</h3>
                 <p>Check which faculties you qualify for based on your high school percentage.</p>
