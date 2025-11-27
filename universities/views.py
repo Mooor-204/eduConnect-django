@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from .models import Faculty
 
 def universities_list(request):
-    return render(request, 'universities/list.html')
+    faculties = Faculty.objects.all()
+    return render(request, 'universities/list.html', {'faculties': faculties})

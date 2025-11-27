@@ -168,7 +168,7 @@
             {% if not user.is_authenticated %}
                 <a href="{% url 'signup' %}" class="cta-button">Get Started Today</a>
             {% else %}
-                <a href="/universities/" class="cta-button">Browse Universities</a>
+                <a href="{% url 'universities_list' %}" class="cta-button">Browse Universities</a>
             {% endif %}
         </div>
     </section>
@@ -176,12 +176,12 @@
     <section class="features">
         <h2 style="text-align: center; margin-bottom: 2rem;">Why Choose EduConnect?</h2>
         <div class="features-grid">
-            <div class="feature-card">
+            <div class="feature-card" onclick="location.href='{% url 'universities_list' %}';" style="cursor: pointer;">
                 <div class="feature-icon">🎓</div>
                 <h3>University Database</h3>
                 <p>Access comprehensive information about Egyptian universities and their faculties.</p>
             </div>
-                <div class="feature-card" onclick="location.href='{% url 'calculation:calculator_home' %}';" style="cursor: pointer;">
+            <div class="feature-card" onclick="location.href='{% url 'calculation:calculator_home' %}';" style="cursor: pointer;">
                 <div class="feature-icon">📊</div>
                 <h3>Eligibility Calculator</h3>
                 <p>Check which faculties you qualify for based on your high school percentage.</p>

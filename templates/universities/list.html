@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universities - EduConnect Egypt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        .universities-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .faculty-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        .search-box {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            width: 100%;
+            border: 2px solid #e1e5e9;
+            border-radius: 5px;
+        }
+        .uni-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">EduConnect Egypt</div>
+            <ul class="nav-links">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="#">Welcome, {{ user.username }}!</a></li>
+                    {% if user.is_staff or user.is_superuser %}
+                        <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="universities-container">
+        <h1 class="uni-header">🎓 Browse Universities</h1>
+        
+        <input type="text" class="search-box" placeholder="🔍 Search universities..." id="searchInput">
+        
+        <div id="facultiesList">
+            {% for faculty in faculties %}
+            <div class="faculty-card">
+                <h3>{{ faculty.name }}</h3>
+                <p><strong>University:</strong> {{ faculty.university }}</p>
+                <p><strong>Fees:</strong> {{ faculty.fees }} EGP</p>
+                <p><strong>Required Percentage:</strong> {{ faculty.required_percent }}%</p>
+                <p><strong>Credits:</strong> {{ faculty.credits }}</p>
+                {% if faculty.extra_requirements %}
+                <p><strong>Requirements:</strong> {{ faculty.extra_requirements }}</p>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="no-data">
+                <h3>No faculties available yet</h3>
+                <p>Check back later or contact admin to add university data.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.faculty-card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
