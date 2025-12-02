@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import UserAcademicRecord, Faculty
+from .models import UserAcademicRecord
 from .forms import ThanawyaForm, AmericanForm, IGCSEForm
+from universities.models import Faculty
+from .recommender import recommend_faculties_for_user
 
 # Grade to percentage mapping for IGCSE
 GRADE_PERCENTAGE = {
@@ -147,10 +149,35 @@ def calculation_results(request, percentage):
         percentage_float = 0.0
     
     # Get faculties that the user qualifies for
-    eligible_faculties = Faculty.objects.filter(min_percentage__lte=percentage_float)
+    eligible_faculties = Faculty.objects.filter(required_percent__lte=percentage_float)
     
     context = {
         'percentage': round(percentage_float, 2),
         'eligible_faculties': eligible_faculties,
     }
     return render(request, 'calculation/results.html', context)
+
+def results_view(request):
+    # ... your existing calculation code ...
+    
+    # Get the user's latest academic record
+    from .models import UserAcademicRecord
+    try:
+        user_record = UserAcademicRecord.objects.filter(
+            user=request.user
+        ).latest('created_at')
+    except UserAcademicRecord.DoesNotExist:
+        user_record = None
+    
+    # Get recommendations if record exists
+    recommendations = []
+    if user_record and user_record.final_percentage:
+        recommendations = recommend_faculties_for_user(user_record)
+    
+    context = {
+        'user_record': user_record,
+        'recommendations': recommendations,
+        # ... your other context data ...
+    }
+    
+    return render(request, 'calculation/results.html', context) 

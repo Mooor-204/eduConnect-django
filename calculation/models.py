@@ -26,11 +26,3 @@ class UserAcademicRecord(models.Model):
     # Calculated percentage
     final_percentage = models.FloatField(null=True, blank=True)
 
-class Faculty(models.Model):
-    name = models.CharField(max_length=200)
-    university = models.CharField(max_length=200)
-    min_percentage = models.FloatField()  # Minimum required percentage
-    description = models.TextField(blank=True)
-    
-    def __str__(self):
-        return f"{self.name} - {self.university}"

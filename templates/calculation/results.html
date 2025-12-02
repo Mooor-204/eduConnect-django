@@ -83,10 +83,21 @@
                                     <div class="card-body">
                                         <h5 class="card-title text-primary">{{ faculty.name }}</h5>
                                         <h6 class="card-subtitle mb-2 text-muted">{{ faculty.university }}</h6>
-                                        {% if faculty.description %}
-                                            <p class="card-text">{{ faculty.description }}</p>
+                                        
+                                        <ul class="list-unstyled">
+                                            <li>💰 <strong>Fees:</strong> {{ faculty.fees }} EGP</li>
+                                            <li>📚 <strong>Credits:</strong> {{ faculty.credits }}</li>
+                                        </ul>
+                                        
+                                        {% if faculty.extra_requirements %}
+                                            <p class="card-text">
+                                                <small class="text-muted">
+                                                    <strong>Requirements:</strong> {{ faculty.extra_requirements }}
+                                                </small>
+                                            </p>
                                         {% endif %}
-                                        <small class="text-muted">Minimum Required: {{ faculty.min_percentage }}%</small>
+                                        
+                                        <small class="text-muted">Minimum Required: {{ faculty.required_percent }}%</small>
                                     </div>
                                 </div>
                             </div>
