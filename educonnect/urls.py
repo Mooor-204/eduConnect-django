@@ -7,4 +7,5 @@ urlpatterns = [
     path('auth/', include('auth_app.urls')),
     path('universities/', include('universities.urls')),
     path('calculation/', include('calculation.urls')),
+    path('', include('profile_menu.urls')),
 ]
