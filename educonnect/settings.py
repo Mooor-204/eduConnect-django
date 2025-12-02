@@ -14,10 +14,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'homepage',      # ← ADD THIS
-    'auth_app',      # ← ADD THIS
-    'universities',  # ← ADD THIS
+    'homepage',     
+    'auth_app',     
+    'universities',  
     'calculation',
+    'profile_menu',
 ]
 
 MIDDLEWARE = [
