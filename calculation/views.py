@@ -7,7 +7,7 @@ from .forms import ThanawyaForm, AmericanForm, IGCSEForm
 from universities.models import Faculty, FacultyApplication
 from .recommender import recommend_faculties_for_user
 
-
+# Grade to percentage mapping for IGCSE
 GRADE_PERCENTAGE = {
     'A*': 100,
     'A': 95,
@@ -29,7 +29,7 @@ def thanawya_calculator(request):
             total_marks = form.cleaned_data['total_marks']
             percentage = (total_marks / 410) * 100
             
-            
+            # Save to database
             record = UserAcademicRecord(
                 user=request.user,
                 education_type='thanawya',
@@ -55,31 +55,31 @@ def american_calculator(request):
             
             print(f"DEBUG - GPA: {gpa}, SAT I: {sat1_score}, SAT II: {sat2_score}")
             
-            
+            # Convert GPA → percentage (GPA × 25 = GPA%)
             gpa_percentage = gpa * 25
             print(f"DEBUG - GPA Percentage: {gpa_percentage}")
             
-            
+            # Convert SAT I → percentage (SAT I / 1600 × 100 = SAT I%)
             sat1_percentage = (sat1_score / 1600) * 100
             print(f"DEBUG - SAT I Percentage: {sat1_percentage}")
             
-            
+            # Convert SAT II → percentage (SAT II / 1600 × 100 = SAT II%)
             sat2_percentage = (sat2_score / 1600) * 100 if sat2_score > 0 else 0
             print(f"DEBUG - SAT II Percentage: {sat2_percentage}")
             
-            
+            # Check if SAT II is provided to decide weights
             if sat2_score > 0:
-                
+                # Both SATs provided: 40-30-30
                 final_percentage = (gpa_percentage * 0.4) + (sat1_percentage * 0.3) + (sat2_percentage * 0.3)
                 print(f"DEBUG - Using 40-30-30 weights")
             else:
-                 
+                # Only SAT I provided: 40-60-0  
                 final_percentage = (gpa_percentage * 0.4) + (sat1_percentage * 0.6)
                 print(f"DEBUG - Using 40-60-0 weights")
             
             print(f"DEBUG - Final Percentage: {final_percentage}")
             
-            
+            # Save to database
             record = UserAcademicRecord(
                 user=request.user,
                 education_type='american',
@@ -106,7 +106,7 @@ def igcse_calculator(request):
             total_percentage = 0
             subject_count = 0
             
-            
+            # Parse subjects and calculate average
             for line in subjects_text.split('\n'):
                 line = line.strip()
                 if ':' in line:
@@ -127,7 +127,7 @@ def igcse_calculator(request):
             else:
                 final_percentage = 0
             
-           
+            # Save to database
             record = UserAcademicRecord(
                 user=request.user,
                 education_type='igcse',
@@ -145,15 +145,15 @@ def igcse_calculator(request):
 @login_required
 def calculation_results(request, percentage):
     try:
-        
+        # Convert string percentage to float
         percentage_float = float(percentage)
     except (ValueError, TypeError):
         percentage_float = 0.0
     
-    
+    # Get faculties that the user qualifies for
     eligible_faculties = Faculty.objects.filter(required_percent__lte=percentage_float)
     
-    
+    # Check which faculties the user has already applied to
     applied_faculty_ids = []
     if request.user.is_authenticated:
         applied_faculty_ids = FacultyApplication.objects.filter(
@@ -163,15 +163,12 @@ def calculation_results(request, percentage):
     context = {
         'percentage': round(percentage_float, 2),
         'eligible_faculties': eligible_faculties,
-        'applied_faculty_ids': list(applied_faculty_ids),  # Convert to list for template
+        'applied_faculty_ids': list(applied_faculty_ids),
     }
     return render(request, 'calculation/results.html', context)
 
 def results_view(request):
-    # ... your existing calculation code ...
-    
     # Get the user's latest academic record
-    from .models import UserAcademicRecord
     try:
         user_record = UserAcademicRecord.objects.filter(
             user=request.user
@@ -191,28 +188,18 @@ def results_view(request):
     
     return render(request, 'calculation/results.html', context)
 
-# ✅ NEW FUNCTION ADDED HERE:
 @login_required
 def apply_to_faculty(request, faculty_id):
-    """
-    Handle Apply Now button click:
-    1. Record application in database
-    2. Redirect to Google Form
-    """
-    # Get the faculty
     faculty = get_object_or_404(Faculty, id=faculty_id)
     student = request.user
     
-    # Check if applications are open
     if not faculty.is_applications_open:
         messages.error(request, f"Applications for {faculty.name} are currently closed.")
         return redirect('calculation:calculation_results', percentage=request.GET.get('percentage', '0'))
     
-    # Check if already applied
     if FacultyApplication.objects.filter(student=student, faculty=faculty).exists():
         messages.warning(request, f"You have already applied to {faculty.name}!")
     else:
-        # Create application record
         FacultyApplication.objects.create(
             student=student, 
             faculty=faculty,
@@ -220,9 +207,22 @@ def apply_to_faculty(request, faculty_id):
         )
         messages.success(request, f"Application submitted for {faculty.name}!")
     
-    # Redirect to Google Form
     if faculty.application_form_url:
         return redirect(faculty.application_form_url)
     else:
         messages.error(request, "Application form link not available. Please contact the university.")
         return redirect('calculation:calculation_results', percentage=request.GET.get('percentage', '0'))
+
+
+@login_required
+def my_applications(request):
+    """
+    Show student all their applications and status
+    """
+    applications = FacultyApplication.objects.filter(
+        student=request.user
+    ).order_by('-applied_at')
+    
+    return render(request, 'calculation/my_applications.html', {
+        'applications': applications
+    })
