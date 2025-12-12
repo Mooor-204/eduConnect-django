@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eligibility Results - EduConnect Egypt</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -51,19 +52,81 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
             transition: transform 0.3s;
             margin-bottom: 20px;
+            height: 100%;
         }
         .faculty-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .btn-apply {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            font-weight: bold;
+            padding: 10px 25px;
+            transition: all 0.3s;
+        }
+        .btn-apply:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        .btn-applied {
+            background: linear-gradient(135deg, #6c757d, #adb5bd);
+            border: none;
+            font-weight: bold;
+            padding: 10px 25px;
+        }
+        .btn-closed {
+            background: linear-gradient(135deg, #dc3545, #e35d6a);
+            border: none;
+            font-weight: bold;
+            padding: 10px 25px;
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .deadline-text {
+            font-size: 0.85rem;
+            color: #dc3545;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <a href="{% url 'calculation:calculator_home' %}" class="back-button">← Calculate Again</a>
+    <a href="{% url 'calculation:calculator_home' %}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Calculate Again
+    </a>
     
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="results-container">
+                    <!-- Messages Display -->
+                    {% if messages %}
+                    <div class="messages mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
                     <h1 class="text-center mb-4">Eligibility Results</h1>
                     
                     <div class="text-center">
@@ -78,41 +141,121 @@
                     {% if eligible_faculties %}
                         <div class="row">
                             {% for faculty in eligible_faculties %}
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-4">
                                 <div class="card faculty-card">
                                     <div class="card-body">
                                         <h5 class="card-title text-primary">{{ faculty.name }}</h5>
-                                        <h6 class="card-subtitle mb-2 text-muted">{{ faculty.university }}</h6>
+                                        <h6 class="card-subtitle mb-2 text-muted">
+                                            <i class="fas fa-university"></i> {{ faculty.university }}
+                                        </h6>
+                                        
+                                        <!-- Application Status Badge -->
+                                        {% if faculty.id in applied_faculty_ids %}
+                                            <span class="status-badge badge-success mb-3">
+                                                <i class="fas fa-check-circle"></i> Already Applied
+                                            </span>
+                                        {% elif not faculty.is_applications_open %}
+                                            <span class="status-badge badge-danger mb-3">
+                                                <i class="fas fa-times-circle"></i> Applications Closed
+                                            </span>
+                                        {% else %}
+                                            <span class="status-badge badge-warning mb-3">
+                                                <i class="fas fa-clock"></i> Accepting Applications
+                                            </span>
+                                        {% endif %}
                                         
                                         <ul class="list-unstyled">
-                                            <li>💰 <strong>Fees:</strong> {{ faculty.fees }} EGP</li>
-                                            <li>📚 <strong>Credits:</strong> {{ faculty.credits }}</li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-money-bill-wave text-success"></i> 
+                                                <strong>Fees:</strong> {{ faculty.fees }} EGP
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-graduation-cap text-info"></i> 
+                                                <strong>Credits:</strong> {{ faculty.credits }}
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-chart-line text-warning"></i> 
+                                                <strong>Required:</strong> {{ faculty.required_percent }}%
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-user-check text-success"></i> 
+                                                <strong>Your Score:</strong> {{ percentage }}%
+                                            </li>
                                         </ul>
                                         
                                         {% if faculty.extra_requirements %}
-                                            <p class="card-text">
-                                                <small class="text-muted">
-                                                    <strong>Requirements:</strong> {{ faculty.extra_requirements }}
-                                                </small>
-                                            </p>
+                                            <div class="alert alert-light mt-3">
+                                                <strong><i class="fas fa-list-check"></i> Additional Requirements:</strong>
+                                                <p class="mb-0 mt-1">{{ faculty.extra_requirements }}</p>
+                                            </div>
                                         {% endif %}
                                         
-                                        <small class="text-muted">Minimum Required: {{ faculty.required_percent }}%</small>
+                                        <!-- Apply Button -->
+                                        <div class="mt-4">
+                                            {% if faculty.id in applied_faculty_ids %}
+                                                <button class="btn btn-applied w-100" disabled>
+                                                    <i class="fas fa-check-double"></i> Application Submitted
+                                                </button>
+                                                <p class="text-center text-muted mt-2 small">
+                                                    <i class="fas fa-info-circle"></i> You've already applied to this faculty
+                                                </p>
+                                            {% elif not faculty.is_applications_open %}
+                                                <button class="btn btn-closed w-100" disabled>
+                                                    <i class="fas fa-lock"></i> Applications Closed
+                                                </button>
+                                            {% else %}
+                                                <a href="{% url 'calculation:apply_faculty' faculty.id %}?percentage={{ percentage }}" 
+                                                   class="btn btn-apply w-100">
+                                                    <i class="fas fa-paper-plane"></i> Apply Now
+                                                </a>
+                                                {% if faculty.application_deadline %}
+                                                    <p class="deadline-text text-center mt-2">
+                                                        <i class="fas fa-calendar-times"></i> 
+                                                        Deadline: {{ faculty.application_deadline|date:"F d, Y" }}
+                                                    </p>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Google Form Indicator -->
+                                        {% if faculty.application_form_url and faculty.is_applications_open and faculty.id not in applied_faculty_ids %}
+                                            <p class="text-center text-muted small mt-2">
+                                                <i class="fas fa-external-link-alt"></i> 
+                                                You'll be redirected to the official application form
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <h5><i class="fas fa-info-circle"></i> How to Apply:</h5>
+                            <ol class="mb-0">
+                                <li>Click "Apply Now" on your chosen faculty</li>
+                                <li>You'll be redirected to the university's official Google Form</li>
+                                <li>Fill out the application form completely</li>
+                                <li>Submit the form - your application will be recorded</li>
+                                <li>The university will contact you for the next steps</li>
+                            </ol>
+                        </div>
                     {% else %}
                         <div class="alert alert-warning text-center">
-                            <h4>No Faculties Found</h4>
+                            <h4><i class="fas fa-exclamation-triangle"></i> No Faculties Found</h4>
                             <p>No faculties found for your percentage. You may need to improve your scores or consider other options.</p>
                         </div>
                     {% endif %}
                     
-                    <div class="text-center mt-4">
-                        <a href="{% url 'calculation:calculator_home' %}" class="btn btn-primary btn-lg">Calculate Again</a>
-                        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">Back to Home</a>
+                    <div class="text-center mt-5">
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'calculation:calculator_home' %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-calculator"></i> Calculate Again
+                            </a>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-home"></i> Back to Home
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,5 +263,15 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
 </body>
 </html>
