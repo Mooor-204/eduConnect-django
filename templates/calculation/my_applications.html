@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="container-main">
+        <h1 class="mb-4">
+            <i class="fas fa-file-alt text-primary"></i> My Applications
+        </h1>
+        
+        {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if applications %}
+            <p class="text-muted mb-4">
+                <i class="fas fa-info-circle"></i> You have {{ applications.count }} application{{ applications.count|pluralize }}
+            </p>
+            
+            <div class="row">
+                {% for app in applications %}
+                <div class="col-md-6 mb-4">
+                    <div class="card app-card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-graduation-cap text-primary"></i> {{ app.faculty.name }}
+                            </h5>
+                            <h6 class="card-subtitle mb-3 text-muted">
+                                <i class="fas fa-university"></i> {{ app.faculty.university }}
+                            </h6>
+                            
+                            {% if app.status == 'ACCEPTED' %}
+                                <span class="status-badge status-approved">
+                                    <i class="fas fa-check-circle"></i> ✅ Approved
+                                </span>
+                            {% elif app.status == 'REJECTED' %}
+                                <span class="status-badge status-rejected">
+                                    <i class="fas fa-times-circle"></i> ❌ Rejected
+                                </span>
+                            {% elif app.status == 'UNDER_REVIEW' %}
+                                <span class="status-badge status-review">
+                                    <i class="fas fa-search"></i> 🔍 Under Review
+                                </span>
+                            {% elif app.status == 'SUBMITTED' %}
+                                <span class="status-badge status-submitted">
+                                    <i class="fas fa-paper-plane"></i> 📤 Submitted
+                                </span>
+                            {% else %}
+                                <span class="status-badge status-pending">
+                                    <i class="fas fa-clock"></i> ⏳ {{ app.status|title }}
+                                </span>
+                            {% endif %}
+                            
+                            <div class="mt-4">
+                                <p>
+                                    <strong><i class="fas fa-calendar-plus"></i> Applied:</strong> 
+                                    {{ app.applied_at|date:"F d, Y" }} at {{ app.applied_at|time:"g:i A" }}
+                                </p>
+                                
+                                {% if app.decision_date %}
+                                <p>
+                                    <strong><i class="fas fa-calendar-check"></i> Decision Date:</strong> 
+                                    {{ app.decision_date|date:"F d, Y" }}
+                                </p>
+                                {% endif %}
+                                
+                                {% if app.faculty.required_percent %}
+                                <p>
+                                    <strong><i class="fas fa-chart-line"></i> Required Score:</strong> 
+                                    {{ app.faculty.required_percent }}%
+                                </p>
+                                {% endif %}
+                                
+                                {% if app.decision_notes %}
+                                <div class="alert alert-light mt-3">
+                                    <strong><i class="fas fa-comment-dots"></i> Notes from University:</strong>
+                                    <p class="mb-0 mt-2">{{ app.decision_notes }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if app.admin_notes and user.is_staff %}
+                                <div class="alert alert-warning mt-3">
+                                    <strong><i class="fas fa-lock"></i> Admin Notes (Only you can see):</strong>
+                                    <p class="mb-0 mt-2">{{ app.admin_notes }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mt-4">
+                                {% if app.status == 'ACCEPTED' %}
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-party-horn"></i> <strong>Congratulations!</strong> 
+                                        Your application has been accepted. The university will contact you soon.
+                                    </div>
+                                {% elif app.status == 'REJECTED' %}
+                                    <div class="alert alert-light">
+                                        <i class="fas fa-heart"></i> Don't worry! You can apply to other faculties or try again next semester.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-chart-pie"></i> Application Summary</h5>
+                    <div class="row text-center mt-3">
+                        <div class="col">
+                            <div class="display-6 text-primary">{{ applications.count }}</div>
+                            <small class="text-muted">Total Applications</small>
+                        </div>
+                        <div class="col">
+                            <div class="display-6 text-success">
+                                {{ applications|length|add:"-1" }}
+                            </div>
+                            <small class="text-muted">Pending Review</small>
+                        </div>
+                        <div class="col">
+                            <div class="display-6 text-success">
+                                0
+                            </div>
+                            <small class="text-muted">Accepted</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-file-alt"></i>
+                <h3>No Applications Yet</h3>
+                <p class="mb-4">You haven't applied to any faculties yet.</p>
+                <a href="{% url 'calculation:calculator_home' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-calculator"></i> Calculate Scores & Apply
+                </a>
+                <p class="text-muted mt-3">
+                    <small>
+                        <i class="fas fa-lightbulb"></i> 
+                        Tip: Calculate your scores first to see which faculties you qualify for.
+                    </small>
+                </p>
+            </div>
+        {% endif %}
+        
+        <div class="mt-5 text-center">
+            <div class="btn-group" role="group">
+                <a href="{% url 'calculation:calculator_home' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-calculator"></i> Calculate Scores
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                {% if user.is_staff %}
+                <a href="/admin/universities/facultyapplication/" class="btn btn-outline-warning">
+                    <i class="fas fa-cog"></i> Manage Applications (Admin)
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container-main {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin-top: 30px;
+    }
+    .status-badge {
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    .status-pending { 
+        background: #fff3cd; 
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+    .status-approved { 
+        background: #d4edda; 
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    .status-rejected { 
+        background: #f8d7da; 
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    .status-submitted { 
+        background: #d1ecf1; 
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+    .status-review { 
+        background: #cce5ff; 
+        color: #004085;
+        border: 1px solid #b8daff;
+    }
+    .app-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+        margin-bottom: 20px;
+        border-left: 5px solid #667eea;
+    }
+    .app-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        color: #666;
+    }
+    .empty-state i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+</style>
+
+<script>
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+{% endblock %}

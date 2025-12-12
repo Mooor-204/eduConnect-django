@@ -10,4 +10,5 @@ urlpatterns = [
     path('igcse/', views.igcse_calculator, name='igcse_calc'),
     path('results/<str:percentage>/', views.calculation_results, name='calculation_results'),
     path('apply/<int:faculty_id>/', views.apply_to_faculty, name='apply_faculty'),
+    path('my-applications/', views.my_applications, name='my_applications'),
 ]
