@@ -1,0 +1,20 @@
+{% extends 'learning_portal/base_portal.html' %}
+
+{% block title %}Learning Portal{% endblock %}
+
+{% block content %}
+<h1>Learning Portal</h1>
+<p>Explore courses in your intended major before starting university</p>
+
+<div class="major-grid">
+    {% for major_code, major_name in majors.items %}
+    <div class="major-card">
+        <h3>{{ major_name }}</h3>
+        <p>Prepare for your {{ major_name }} studies</p>
+        <a href="{% url 'learning_portal:courses_by_major' major_code %}">
+            View Courses →
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
