@@ -117,10 +117,21 @@
                                             </a>
                                         </div>
                                         
+                                        <!-- ✅ FEATURE 1: Days Remaining Counter -->
                                         {% if app.test_deadline %}
-                                        <div class="alert alert-warning mt-3">
+                                        {% now "Y-m-d" as today_str %}
+                                        <div class="alert {% if app.test_deadline|date:'Y-m-d' < today_str %}alert-danger{% elif app.test_deadline|date:'Y-m-d' == today_str %}alert-warning{% else %}alert-info{% endif %} mt-3">
                                             <i class="fas fa-clock"></i> 
-                                            <strong>Deadline:</strong> Complete tests by {{ app.test_deadline|date:"F d, Y" }}
+                                            <strong>Deadline:</strong> {{ app.test_deadline|date:"F d, Y" }}
+                                            <span class="badge bg-{% if app.test_deadline|date:'Y-m-d' < today_str %}danger{% elif app.test_deadline|date:'Y-m-d' == today_str %}warning{% else %}secondary{% endif %} float-end">
+                                                {% if app.test_deadline|date:'Y-m-d' < today_str %}
+                                                    ⚠️ Overdue
+                                                {% elif app.test_deadline|date:'Y-m-d' == today_str %}
+                                                    ⏰ Due today!
+                                                {% else %}
+                                                    {{ app.test_deadline|timeuntil }} left
+                                                {% endif %}
+                                            </span>
                                         </div>
                                         {% endif %}
                                     </div>
@@ -155,20 +166,17 @@
                             <small class="text-muted">Total Applications</small>
                         </div>
                         <div class="col">
-                            {% with pending=applications|length %}
-                            <div class="display-6 text-warning">{{ pending }}</div>
+                            <div class="display-6 text-warning">{{ applications.count }}</div>
                             <small class="text-muted">Pending Review</small>
-                            {% endwith %}
                         </div>
                         <div class="col">
-                            {% with accepted=applications|length %}
+                            {% with accepted_count=0 %}
                             {% for app in applications %}
                                 {% if app.status == 'ACCEPTED' %}
-                                    {% with accepted=accepted %}
-                                    <div class="display-6 text-success">{{ accepted }}</div>
-                                    {% endwith %}
+                                    {% with accepted_count=accepted_count|add:1 %}{% endwith %}
                                 {% endif %}
                             {% endfor %}
+                            <div class="display-6 text-success">{{ accepted_count }}</div>
                             {% endwith %}
                             <small class="text-muted">Accepted</small>
                         </div>
@@ -180,7 +188,7 @@
             <div class="empty-state">
                 <i class="fas fa-file-alt"></i>
                 <h3>No Applications Yet</h3>
-                                <p class="mb-4">You haven't applied to any faculties yet.</p>
+                <p class="mb-4">You haven't applied to any faculties yet.</p>
                 <a href="{% url 'calculation:calculator_home' %}" class="btn btn-primary btn-lg">
                     <i class="fas fa-calculator"></i> Calculate Scores & Apply
                 </a>
@@ -292,8 +300,9 @@
 
 <script>
     setTimeout(function() {
-        var alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function(alert) {
+        
+        var messageAlerts = document.querySelectorAll('.messages .alert');
+        messageAlerts.forEach(function(alert) {
             var bsAlert = new bootstrap.Alert(alert);
             bsAlert.close();
         });
