@@ -118,7 +118,7 @@
                                         </div>
                                         
                                         
-                                        {% if app.test_deadline %}
+                                        {% if app.test_deadline and not app.tests_completed %}
                                         {% now "Y-m-d" as today_str %}
                                         <div class="alert {% if app.test_deadline|date:'Y-m-d' < today_str %}alert-danger{% elif app.test_deadline|date:'Y-m-d' == today_str %}alert-warning{% else %}alert-info{% endif %} mt-3">
                                             <i class="fas fa-clock"></i> 
@@ -139,7 +139,7 @@
                             </div>
                             {% endif %}
                             
-                           
+                          
                             {% if app.tests_completed %}
                             <div class="card border-success mt-3">
                                 <div class="card-header bg-success text-white">
@@ -178,8 +178,6 @@
                 </div>
                 {% endfor %}
             </div>
-            
-            
             
         {% else %}
             <div class="empty-state">
