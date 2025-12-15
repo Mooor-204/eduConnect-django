@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'universities',  
     'calculation',
     'profile_menu',
+    'learning_portal.apps.LearningPortalConfig',
 ]
 
 MIDDLEWARE = [

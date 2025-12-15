@@ -1,0 +1,51 @@
+<!-- learning_portal/templates/learning_portal/base_portal.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Learning Portal - EduConnect{% endblock %}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .portal-nav {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .portal-nav a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: 500;
+        }
+        .portal-nav a:hover {
+            text-decoration: underline;
+        }
+        .portal-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="portal-nav">
+        <a href="{% url 'learning_portal:home' %}">🏠 Learning Portal Home</a>
+        <a href="{% url 'home' %}">← Back to EduConnect Main</a>
+    </nav>
+    
+    <div class="portal-container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

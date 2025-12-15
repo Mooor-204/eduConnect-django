@@ -1,0 +1,81 @@
+{% extends 'learning_portal/base_portal.html' %}
+
+{% block title %}Courses for {{ major_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ major_name }} Courses</h1>
+<p>Prepare for your {{ major_name }} studies with these recommended courses:</p>
+
+{% if courses %}
+    <div class="course-list">
+        {% for course in courses %}
+        <div class="course-item">
+            <h3>{{ course.title }}</h3>
+            <div class="course-meta">
+                <span class="provider">Provider: {{ course.provider }}</span>
+                |
+                <span class="duration">{{ course.duration_hours }} hours</span>
+                |
+                <span class="free-badge">
+                    {% if course.free %}🆓 FREE{% else %}💰 Paid{% endif %}
+                </span>
+            </div>
+            <p>{{ course.description }}</p>
+            <a href="{{ course.url }}" target="_blank" class="course-link">
+                Visit Course →
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="no-courses">
+        <p>No courses available for {{ major_name }} yet. Check back soon!</p>
+    </div>
+{% endif %}
+
+<a href="{% url 'learning_portal:home' %}" class="back-link">← Back to All Majors</a>
+
+<style>
+    .course-list {
+        margin: 30px 0;
+    }
+    .course-item {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-left: 4px solid #667eea;
+    }
+    .course-meta {
+        color: #666;
+        font-size: 0.9em;
+        margin: 10px 0;
+    }
+    .course-meta span {
+        margin-right: 15px;
+    }
+    .free-badge {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .course-link {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-top: 10px;
+    }
+    .course-link:hover {
+        background: #5a67d8;
+    }
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        color: #667eea;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
