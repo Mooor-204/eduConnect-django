@@ -103,17 +103,17 @@
                                         
                                         <div class="test-card mb-3">
                                             <h5><i class="fas fa-calculator"></i> Math Placement Test</h5>
-                                            <p>Determine if you start with Calculus or Pre-Calculus</p>
+                                            <p>Advanced math assessment to determine your starting level</p>
                                             <a href="{{ app.math_test_url }}" target="_blank" class="btn btn-primary">
-                                                <i class="fas fa-external-link-alt"></i> Take Math Test
+                                                <i class="fas fa-play-circle"></i> Start Math Test
                                             </a>
                                         </div>
                                         
                                         <div class="test-card mb-3">
                                             <h5><i class="fas fa-language"></i> English Placement Test</h5>
-                                            <p>Oxford English test to assess your level</p>
+                                            <p>Quick English check to assess your language level</p>
                                             <a href="{{ app.english_test_url }}" target="_blank" class="btn btn-success">
-                                                <i class="fas fa-external-link-alt"></i> Take English Test
+                                                <i class="fas fa-play-circle"></i> Start English Test
                                             </a>
                                         </div>
                                         
@@ -155,28 +155,20 @@
                             <small class="text-muted">Total Applications</small>
                         </div>
                         <div class="col">
-                            {% comment %} Count pending applications {% endcomment %}
-                            {% with pending_count=0 %}
-                                {% for app in applications %}
-                                    {% if app.status == 'PENDING' or app.status == 'UNDER_REVIEW' or app.status == 'SUBMITTED' %}
-                                        {% with pending_count=pending_count|add:1 %}
-                                        {% endwith %}
-                                    {% endif %}
-                                {% endfor %}
-                                <div class="display-6 text-warning">{{ pending_count }}</div>
-                            {% endwith %}
+                            {% with pending=applications|length %}
+                            <div class="display-6 text-warning">{{ pending }}</div>
                             <small class="text-muted">Pending Review</small>
+                            {% endwith %}
                         </div>
                         <div class="col">
-                            {% comment %} Count accepted applications {% endcomment %}
-                            {% with accepted_count=0 %}
-                                {% for app in applications %}
-                                    {% if app.status == 'ACCEPTED' %}
-                                        {% with accepted_count=accepted_count|add:1 %}
-                                        {% endwith %}
-                                    {% endif %}
-                                {% endfor %}
-                                <div class="display-6 text-success">{{ accepted_count }}</div>
+                            {% with accepted=applications|length %}
+                            {% for app in applications %}
+                                {% if app.status == 'ACCEPTED' %}
+                                    {% with accepted=accepted %}
+                                    <div class="display-6 text-success">{{ accepted }}</div>
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
                             {% endwith %}
                             <small class="text-muted">Accepted</small>
                         </div>
@@ -188,7 +180,7 @@
             <div class="empty-state">
                 <i class="fas fa-file-alt"></i>
                 <h3>No Applications Yet</h3>
-                <p class="mb-4">You haven't applied to any faculties yet.</p>
+                                <p class="mb-4">You haven't applied to any faculties yet.</p>
                 <a href="{% url 'calculation:calculator_home' %}" class="btn btn-primary btn-lg">
                     <i class="fas fa-calculator"></i> Calculate Scores & Apply
                 </a>
