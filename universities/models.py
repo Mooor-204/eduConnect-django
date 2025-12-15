@@ -53,27 +53,37 @@ class FacultyApplication(models.Model):
     
     def save(self, *args, **kwargs):
         """Automatically assign tests when status changes to ACCEPTED"""
-        
-        if self.pk:  
+        # Check if this is an existing instance
+        if self.pk:  # If object already exists in DB
             try:
-                old_status = FacultyApplication.objects.get(pk=self.pk).status
+                old_instance = FacultyApplication.objects.get(pk=self.pk)
+                old_status = old_instance.status
                 
+                # If status changed TO ACCEPTED
                 if old_status != 'ACCEPTED' and self.status == 'ACCEPTED':
-                    self.assign_tests()
+                    self._assign_tests()
             except FacultyApplication.DoesNotExist:
                 pass
         
+        # For new objects that are created as ACCEPTED
         elif self.status == 'ACCEPTED':
-            self.assign_tests()
+            self._assign_tests()
         
         super().save(*args, **kwargs)
     
-    def assign_tests(self):
-        """Assign ACTUAL placement tests when application is approved"""
+    def _assign_tests(self):
+        """PRIVATE: Assign placement tests when application is approved"""
         self.tests_assigned = True
         
-        self.math_test_url = "https://docs.google.com/forms/d/e/1FAIpQLSd4oeXOyEHDxeGRA6Pj2nMBHPQDyGazo1pChBy8CFkNBucPfA/viewform"
+        # ✅ Math test - ProProfs Advanced Math Quiz
+        self.math_test_url = "https://www.proprofs.com/quiz-school/story.php?title=mjc0njizoadrdw"
         
+        # ✅ English test - EF SET quick check
         self.english_test_url = "https://www.efset.org/quick-check/"
         
         self.test_deadline = timezone.now() + timedelta(days=14)
+    
+    def assign_tests(self):
+        """Public method to assign tests"""
+        self._assign_tests()
+        self.save()
