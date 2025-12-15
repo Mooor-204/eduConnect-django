@@ -27,19 +27,19 @@ class FacultyAdmin(admin.ModelAdmin):
 
 @admin.register(FacultyApplication)
 class FacultyApplicationAdmin(admin.ModelAdmin):
-    list_display = ['student', 'faculty_name', 'university', 'status', 'tests_assigned', 'applied_at', 'decision_date']
+    list_display = ['student', 'faculty_name', 'university', 'status', 'tests_assigned', 'tests_completed', 'applied_at', 'decision_date']
     list_filter = ['status', 'faculty__university', 'applied_at', 'tests_assigned']
     search_fields = ['student__username', 'student__email', 'faculty__name']
     list_editable = ['status']
     readonly_fields = ['applied_at']
-    actions = ['mark_accepted', 'mark_rejected', 'mark_under_review']  # Removed custom action
+    actions = ['mark_accepted', 'mark_rejected', 'mark_under_review', 'mark_tests_completed']
     
     fieldsets = (
         ('Application Details', {
             'fields': ('student', 'faculty', 'status', 'applied_at')
         }),
         ('Placement Tests', {
-            'fields': ('tests_assigned', 'math_test_url', 'english_test_url', 'test_deadline'),
+            'fields': ('tests_assigned', 'tests_completed', 'test_completion_date', 'math_test_url', 'english_test_url', 'test_deadline'),
             'classes': ('collapse',)
         }),
         ('Review Process', {
@@ -73,6 +73,16 @@ class FacultyApplicationAdmin(admin.ModelAdmin):
     def mark_under_review(self, request, queryset):
         updated = queryset.update(status='UNDER_REVIEW')
         self.message_user(request, f"{updated} application(s) marked as Under Review.")
+    
+    @admin.action(description="✅ Mark tests as completed")
+    def mark_tests_completed(self, request, queryset):
+        updated_count = 0
+        for app in queryset:
+            app.tests_completed = True
+            app.test_completion_date = timezone.now()
+            app.save()
+            updated_count += 1
+        self.message_user(request, f"{updated_count} application(s) marked as tests completed")
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
