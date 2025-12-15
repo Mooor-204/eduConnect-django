@@ -8,7 +8,6 @@ class Course(models.Model):
         ('MED', 'Medicine'),
         ('BUS', 'Business'),
         ('ART', 'Arts & Humanities'),
-        ('SCI', 'Natural Sciences'),
     ]
     
     title = models.CharField(max_length=200)
@@ -18,6 +17,7 @@ class Course(models.Model):
     duration_hours = models.IntegerField()
     free = models.BooleanField(default=True)
     description = models.TextField()
+
     
     def __str__(self):
         return f"{self.title} ({self.get_major_display()})"

@@ -22,7 +22,7 @@ class Command(BaseCommand):
                 'provider': 'Coursera',
                 'url': 'https://www.coursera.org/specializations/python',
                 'duration_hours': 80,
-                'free': True,
+                'free': False,
                 'description': 'Learn Python programming from basics to advanced concepts'
             },
             {
@@ -46,44 +46,55 @@ class Command(BaseCommand):
                 'description': 'Fundamental concepts of forces and equilibrium'
             },
             {
-                'title': 'Introduction to Electrical Engineering',
+                'title': 'Introduction to Electronics',
                 'major': 'ENG',
-                'provider': 'MIT OpenCourseWare',
-                'url': 'https://ocw.mit.edu/courses/electrical-engineering',
-                'duration_hours': 50,
-                'free': True,
-                'description': 'Basic electrical engineering concepts and circuits'
+                'provider': 'Coursera',
+                'url': 'https://www.coursera.org/learn/electronics',
+                'duration_hours': 45,
+                'free': False,
+                'description': 'Basic electronics and circuit design for beginners'
             },
             
             # Medicine Courses
             {
-                'title': 'Human Anatomy & Physiology',
+                'title': 'Health and Medicine - Khan Academy',
                 'major': 'MED',
-                'provider': 'Coursera',
-                'url': 'https://www.coursera.org/learn/anatomy',
-                'duration_hours': 70,
+                'provider': 'Khan Academy',
+                'url': 'https://www.khanacademy.org/science/health-and-medicine',
+                'duration_hours': 80,
                 'free': True,
-                'description': 'Comprehensive introduction to human body systems'
+                'description': 'Complete medical basics: anatomy, physiology, diseases, and healthcare'
+               
             },
             {
-                'title': 'Medical Terminology',
+                'title': 'Medical Neuroscience - Duke University',
                 'major': 'MED',
-                'provider': 'edX',
-                'url': 'https://www.edx.org/learn/medical-terminology',
-                'duration_hours': 30,
-                'free': True,
-                'description': 'Learn the language of healthcare professionals'
+                'provider': 'Coursera',
+                'url': 'https://www.coursera.org/learn/medical-neuroscience',
+                'duration_hours': 55,
+                'free': False,
+                'description': 'Comprehensive introduction to human nervous system'
+                
             },
-            
+            {
+                'title': 'Introduction to Human Physiology',
+                'major': 'MED',
+                'provider': 'Coursera',
+                'url': 'https://www.coursera.org/learn/physiology',
+                'duration_hours': 35,
+                'free': False,
+                'description': 'Fundamental concepts of human body function'
+            },
+
             # Business Courses
             {
-                'title': 'Introduction to Finance',
+                'title': 'Financial Markets - Yale University',
                 'major': 'BUS',
                 'provider': 'Coursera',
-                'url': 'https://www.coursera.org/learn/introduction-to-finance',
-                'duration_hours': 45,
-                'free': True,
-                'description': 'Fundamental concepts of corporate finance and accounting'
+                'url': 'https://www.coursera.org/learn/financial-markets-global',
+                'duration_hours': 40,
+                'free': False,
+                'description': 'Nobel-winning professor Robert Shiller teaches financial markets, risk management, and behavioral finance'
             },
             {
                 'title': 'Marketing Fundamentals',
@@ -102,20 +113,20 @@ class Command(BaseCommand):
                 'provider': 'Coursera',
                 'url': 'https://www.coursera.org/learn/philosophy',
                 'duration_hours': 25,
-                'free': True,
+                'free': False,
                 'description': 'Explore fundamental philosophical questions and thinkers'
             },
-            
-            # Natural Sciences
             {
-                'title': 'General Chemistry',
-                'major': 'SCI',
-                'provider': 'Khan Academy',
-                'url': 'https://www.khanacademy.org/science/chemistry',
-                'duration_hours': 60,
-                'free': True,
-                'description': 'Comprehensive chemistry course for science students'
+                'title': 'Moral Foundations of Politics - Yale',
+                'major': 'ART',
+                'provider': 'Coursera',
+                'url': 'https://www.coursera.org/learn/moral-politics',
+                'duration_hours': 40,
+                'free': False,
+                'description': 'Political philosophy exploring democracy, justice, and political legitimacy'
             }
+            
+           
         ]
         
         # Clear existing data (optional)
@@ -134,3 +145,5 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(f'Successfully seeded {created_count} courses')
         )
+    
+   
