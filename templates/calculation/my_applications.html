@@ -92,8 +92,44 @@
                                 {% endif %}
                             </div>
                             
+                            {% if app.status == 'ACCEPTED' and app.tests_assigned %}
+                            <div class="placement-tests mt-4">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success text-white">
+                                        <i class="fas fa-graduation-cap"></i> Required Placement Tests
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">Complete these tests before starting your studies:</p>
+                                        
+                                        <div class="test-card mb-3">
+                                            <h5><i class="fas fa-calculator"></i> Math Placement Test</h5>
+                                            <p>Advanced math assessment to determine your starting level</p>
+                                            <a href="{{ app.math_test_url }}" target="_blank" class="btn btn-primary">
+                                                <i class="fas fa-play-circle"></i> Start Math Test
+                                            </a>
+                                        </div>
+                                        
+                                        <div class="test-card mb-3">
+                                            <h5><i class="fas fa-language"></i> English Placement Test</h5>
+                                            <p>Quick English check to assess your language level</p>
+                                            <a href="{{ app.english_test_url }}" target="_blank" class="btn btn-success">
+                                                <i class="fas fa-play-circle"></i> Start English Test
+                                            </a>
+                                        </div>
+                                        
+                                        {% if app.test_deadline %}
+                                        <div class="alert alert-warning mt-3">
+                                            <i class="fas fa-clock"></i> 
+                                            <strong>Deadline:</strong> Complete tests by {{ app.test_deadline|date:"F d, Y" }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
                             <div class="mt-4">
-                                {% if app.status == 'ACCEPTED' %}
+                                {% if app.status == 'ACCEPTED' and not app.tests_assigned %}
                                     <div class="alert alert-success">
                                         <i class="fas fa-party-horn"></i> <strong>Congratulations!</strong> 
                                         Your application has been accepted. The university will contact you soon.
@@ -119,15 +155,21 @@
                             <small class="text-muted">Total Applications</small>
                         </div>
                         <div class="col">
-                            <div class="display-6 text-success">
-                                {{ applications|length|add:"-1" }}
-                            </div>
+                            {% with pending=applications|length %}
+                            <div class="display-6 text-warning">{{ pending }}</div>
                             <small class="text-muted">Pending Review</small>
+                            {% endwith %}
                         </div>
                         <div class="col">
-                            <div class="display-6 text-success">
-                                0
-                            </div>
+                            {% with accepted=applications|length %}
+                            {% for app in applications %}
+                                {% if app.status == 'ACCEPTED' %}
+                                    {% with accepted=accepted %}
+                                    <div class="display-6 text-success">{{ accepted }}</div>
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                            {% endwith %}
                             <small class="text-muted">Accepted</small>
                         </div>
                     </div>
@@ -138,7 +180,7 @@
             <div class="empty-state">
                 <i class="fas fa-file-alt"></i>
                 <h3>No Applications Yet</h3>
-                <p class="mb-4">You haven't applied to any faculties yet.</p>
+                                <p class="mb-4">You haven't applied to any faculties yet.</p>
                 <a href="{% url 'calculation:calculator_home' %}" class="btn btn-primary btn-lg">
                     <i class="fas fa-calculator"></i> Calculate Scores & Apply
                 </a>
@@ -229,6 +271,22 @@
         font-size: 4rem;
         color: #ddd;
         margin-bottom: 20px;
+    }
+    .test-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+        margin-bottom: 15px;
+    }
+    .test-card h5 {
+        color: #333;
+        margin-bottom: 8px;
+    }
+    .test-card p {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
     }
 </style>
 
