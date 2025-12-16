@@ -1,43 +1,205 @@
 {% extends 'base.html' %}
 
-{% block title %}Calendar - EduConnect{% endblock %}
+{% block title %}My Application Deadlines - EduConnect{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-10 offset-md-1">
-        <div class="card">
-            <div class="card-header">
-                <h3>Calendar</h3>
-            </div>
-            <div class="card-body">
-                <div class="text-center">
-                    <h4>Upcoming Events</h4>
-                    <div class="list-group mt-3">
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">Math Class</h5>
-                                <small>Tomorrow, 10:00 AM</small>
-                            </div>
-                            <p class="mb-1">Room 204</p>
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0"><i class="fas fa-calendar-check"></i> My Application Deadlines</h4>
+                            <small class="opacity-75">Automatically generated from your university applications</small>
                         </div>
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">Science Project Due</h5>
-                                <small>Dec 15, 2024</small>
-                            </div>
-                            <p class="mb-1">Submit final project</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Month Navigation -->
+                    <div class="text-center mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-primary">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                            <h2 class="mb-0">{{ month_name }} {{ year }}</h2>
+                            <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-primary">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
                         </div>
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">Parent-Teacher Meeting</h5>
-                                <small>Dec 20, 2024</small>
-                            </div>
-                            <p class="mb-1">Conference Room A</p>
+                    </div>
+                    
+                    <!-- Calendar Grid -->
+                    <div class="calendar-container">
+                        <!-- Weekday Headers -->
+                        <div class="calendar-weekdays">
+                            <div class="weekday text-danger">Sun</div>
+                            <div class="weekday">Mon</div>
+                            <div class="weekday">Tue</div>
+                            <div class="weekday">Wed</div>
+                            <div class="weekday">Thu</div>
+                            <div class="weekday">Fri</div>
+                            <div class="weekday text-primary">Sat</div>
                         </div>
+                        
+                        <!-- Days Grid -->
+                        <div class="calendar-days">
+                            {% for week in calendar %}
+                                {% for day in week %}
+                                    <div class="calendar-day 
+                                        {% if day == 0 %}empty{% endif %}
+                                        {% if day == today %}today{% endif %}
+                                        {% if day in deadlines_by_day %}has-deadlines{% endif %}">
+                                        
+                                        {% if day != 0 %}
+                                            <div class="day-number">{{ day }}</div>
+                                            
+                                            {% if day in deadlines_by_day %}
+                                                <div class="day-deadlines">
+                                                    {% for deadline in deadlines_by_day.day %}
+                                                        <div class="deadline-dot" 
+                                                             style="background-color: {{ deadline.color }}"
+                                                             title="{{ deadline.title }}">
+                                                            {{ deadline.icon }}
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Current Month's Deadlines List -->
+                    <div class="mt-4">
+                        <h5><i class="fas fa-list-check"></i> Deadlines for {{ month_name }}</h5>
+                        {% if deadlines_by_day %}
+                            <div class="list-group">
+                                {% for day, deadlines_list in deadlines_by_day.items %}
+                                    {% for deadline in deadlines_list %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ deadline.icon }} {{ deadline.title }}</strong>
+                                                <div class="text-muted small">{{ month_name }} {{ day }}, {{ year }}</div>
+                                                {% if deadline.type == 'test' and deadline.math_url %}
+                                                <div class="mt-1">
+                                                    <a href="{{ deadline.math_url }}" class="btn btn-sm btn-outline-danger" target="_blank">
+                                                        <i class="fas fa-calculator"></i> Math Test
+                                                    </a>
+                                                    <a href="{{ deadline.english_url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                        <i class="fas fa-language"></i> English Test
+                                                    </a>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <span class="badge" style="background-color: {{ deadline.color }}; color: white;">
+                                                {{ deadline.type|title }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No deadlines this month.
+                                Deadlines will appear automatically when:
+                                <ul class="mb-0 mt-2">
+                                    <li>You apply to universities with deadlines</li>
+                                    <li>Your applications are accepted (placement tests)</li>
+                                    <li>You complete placement tests</li>
+                                </ul>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.calendar-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.calendar-weekdays .weekday {
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 10px;
+    position: relative;
+    background: white;
+}
+
+.calendar-day.empty {
+    background: transparent;
+    border: none;
+}
+
+.calendar-day.today {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.calendar-day.has-deadlines {
+    border-color: #ffc107;
+    background-color: #fff9e6;
+}
+
+.day-number {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.day-deadlines {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+}
+
+.deadline-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: white;
+    cursor: help;
+}
+</style>
 {% endblock %}
