@@ -10,35 +10,61 @@
                 <h3>Settings</h3>
             </div>
             <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                
                 <div class="mb-4">
                     <h5 class="border-bottom pb-2">Account Settings</h5>
                     <div class="list-group">
-                        
                         <a href="{% url 'change_password' %}" class="list-group-item list-group-item-action">
-                            <i class="bi bi-key me-2"></i> Change Password
+                            <i class="fas fa-key me-2"></i> Change Password
                         </a>
-                       
                         <a href="{% url 'notifications' %}" class="list-group-item list-group-item-action">
-                             <i class="bi bi-bell me-2"></i> Notification Preferences
-                        </a>
-                        
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="bi bi-shield me-2"></i> Privacy Settings
+                            <i class="fas fa-bell me-2"></i> Notification Preferences
                         </a>
                     </div>
                 </div>
 
+                <!-- PRIVACY SETTINGS LINK -->
                 <div class="mb-4">
-                    <h5 class="border-bottom pb-2">Display Settings</h5>
+                    <h5 class="border-bottom pb-2">Privacy Settings</h5>
                     <div class="list-group">
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="bi bi-palette me-2"></i> Theme (Light/Dark)
+                        <a href="{% url 'privacy_settings' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shield-alt me-2"></i> Manage Privacy Settings
+                            <span class="badge bg-primary float-end">
+                                {% if request.session.profile_visible|default:True %}
+                                    Public
+                                {% else %}
+                                    Private
+                                {% endif %}
+                            </span>
                         </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="bi bi-translate me-2"></i> Language
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="bi bi-fonts me-2"></i> Font Size
+                    </div>
+                </div>
+
+                <!-- FONT SIZE SETTINGS LINK -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">Display</h5>
+                    <div class="list-group">
+                        <a href="{% url 'font_settings' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-text-height me-2"></i> Font Size
+                            <span class="badge bg-primary float-end">
+                                {% if request.session.font_size|default:'medium' == 'small' %}
+                                    Small
+                                {% elif request.session.font_size|default:'medium' == 'large' %}
+                                    Large
+                                {% elif request.session.font_size|default:'medium' == 'xlarge' %}
+                                    Extra Large
+                                {% else %}
+                                    Medium
+                                {% endif %}
+                            </span>
                         </a>
                     </div>
                 </div>
@@ -46,4 +72,17 @@
         </div>
     </div>
 </div>
+
+<!-- Apply font size if set -->
+<style>
+{% if request.session.font_size == 'small' %}
+    body { font-size: 14px; }
+{% elif request.session.font_size == 'large' %}
+    body { font-size: 18px; }
+{% elif request.session.font_size == 'xlarge' %}
+    body { font-size: 20px; }
+{% else %}
+    body { font-size: 16px; }
+{% endif %}
+</style>
 {% endblock %}

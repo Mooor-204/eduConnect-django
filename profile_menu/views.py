@@ -11,7 +11,12 @@ def account_view(request):
 
 @login_required
 def settings_view(request):
-    return render(request, 'profile_menu/settings.html')
+   
+    context = {
+        'profile_visible': request.session.get('profile_visible', True),       
+        'font_size': request.session.get('font_size', 'medium'),
+    }
+    return render(request, 'profile_menu/settings.html', context)
 
 @login_required
 def calendar_view(request):
@@ -83,3 +88,28 @@ def notifications_view(request):
     }
     
     return render(request, 'profile_menu/notifications.html', context)
+
+
+@login_required
+def privacy_settings_view(request):
+    if request.method == 'POST':
+        profile_visible = 'profile_visible' in request.POST
+        request.session['profile_visible'] = profile_visible
+        
+        messages.success(request, 'Privacy settings updated!')
+        return redirect('settings')
+    
+    return render(request, 'profile_menu/privacy_settings.html')  
+
+
+
+@login_required
+def font_settings_view(request):
+    if request.method == 'POST':
+        font_size = request.POST.get('font_size', 'medium')
+        request.session['font_size'] = font_size
+        
+        messages.success(request, f'Font size changed to {font_size}')
+        return redirect('settings')
+    
+    return render(request, 'profile_menu/font_settings.html')  
