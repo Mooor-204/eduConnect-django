@@ -31,7 +31,6 @@
                     </div>
                 </div>
 
-                <!-- PRIVACY SETTINGS LINK -->
                 <div class="mb-4">
                     <h5 class="border-bottom pb-2">Privacy Settings</h5>
                     <div class="list-group">
@@ -48,22 +47,13 @@
                     </div>
                 </div>
 
-                <!-- FONT SIZE SETTINGS LINK -->
                 <div class="mb-4">
                     <h5 class="border-bottom pb-2">Display</h5>
                     <div class="list-group">
                         <a href="{% url 'font_settings' %}" class="list-group-item list-group-item-action">
                             <i class="fas fa-text-height me-2"></i> Font Size
-                            <span class="badge bg-primary float-end">
-                                {% if request.session.font_size|default:'medium' == 'small' %}
-                                    Small
-                                {% elif request.session.font_size|default:'medium' == 'large' %}
-                                    Large
-                                {% elif request.session.font_size|default:'medium' == 'xlarge' %}
-                                    Extra Large
-                                {% else %}
-                                    Medium
-                                {% endif %}
+                            <span class="badge bg-primary float-end" id="current-font-badge">
+                                Loading...
                             </span>
                         </a>
                     </div>
@@ -73,16 +63,16 @@
     </div>
 </div>
 
-<!-- Apply font size if set -->
-<style>
-{% if request.session.font_size == 'small' %}
-    body { font-size: 14px; }
-{% elif request.session.font_size == 'large' %}
-    body { font-size: 18px; }
-{% elif request.session.font_size == 'xlarge' %}
-    body { font-size: 20px; }
-{% else %}
-    body { font-size: 16px; }
-{% endif %}
-</style>
+<script>
+// Show current font size from localStorage
+document.addEventListener('DOMContentLoaded', function() {
+    const saved = localStorage.getItem('user_font_size') || '3';
+    const sizeNames = {
+        '1': 'Small',
+        '3': 'Medium', 
+        '5': 'Large'
+    };
+    document.getElementById('current-font-badge').textContent = sizeNames[saved] || 'Medium';
+});
+</script>
 {% endblock %}

@@ -146,5 +146,34 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- FONT SIZE JAVASCRIPT - ONLY NEW CODE -->
+    <script>
+    // Apply font size on page load
+    function applyFontSize() {
+        // Get saved font size from localStorage
+        const savedSize = localStorage.getItem('user_font_size') || '3';
+        
+        // Map sizes to CSS values
+        const sizeMap = {
+            '1': '14px',
+            '3': '16px',
+            '5': '18px'
+        };
+        
+        // Apply to entire page
+        if (sizeMap[savedSize]) {
+            document.documentElement.style.fontSize = sizeMap[savedSize];
+        }
+    }
+    
+    // Apply on page load
+    document.addEventListener('DOMContentLoaded', applyFontSize);
+    
+    // Also apply immediately (in case DOMContentLoaded already fired)
+    applyFontSize();
+    </script>
+    <!-- END OF NEW CODE -->
+    
 </body>
 </html>
