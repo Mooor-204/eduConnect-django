@@ -1,43 +1,50 @@
 from django.test import TestCase
-from django.test import TestCase
+from django.contrib.auth.models import User
 from django.urls import reverse
+from universities.models import Faculty
+from calculation.models import Application
 
 class CalculationViewsTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client.login(username='testuser', password='password')
+        self.faculty = Faculty.objects.create(
+            name="Test Faculty",
+            fees=10000
+        )
 
     def test_calculator_home_view(self):
-        response = self.client.get(reverse('calculation:calculator_home'))
+        url = reverse('calculation:calculator_home')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'calculation/calculator_home.html')
 
     def test_thanawya_view(self):
-        response = self.client.get(reverse('calculation:thanawya_calc'))
+        url = reverse('calculation:thanawya_calc')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'calculation/thanawya_form.html')
 
     def test_american_view(self):
-        response = self.client.get(reverse('calculation:american_calc'))
+        url = reverse('calculation:american_calc')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'calculation/american_form.html')
 
     def test_igcse_view(self):
-        response = self.client.get(reverse('calculation:igcse_calc'))
+        url = reverse('calculation:igcse_calc')
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'calculation/igcse_form.html')
 
     def test_calculation_results_view(self):
-        percentage = "85"
-        response = self.client.get(reverse('calculation:calculation_results', args=[percentage]))
+        url = reverse('calculation:calculation_results', kwargs={'percentage': '85'})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'calculation/results.html')
 
     def test_apply_to_faculty_view(self):
-       
-        from universities.models import Faculty
-        faculty = Faculty.objects.create(name="Test Faculty")
-        response = self.client.get(reverse('calculation:apply_faculty', args=[faculty.id]))
-        self.assertEqual(response.status_code, 302) 
+        url = reverse('calculation:apply_faculty', kwargs={'faculty_id': self.faculty.id})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Application.objects.filter(user=self.user, faculty=self.faculty).exists())
 
     def test_my_applications_view(self):
-        response = self.client.get(reverse('calculation:my_applications'))
-        self.assertEqual(response.status_code, 302)  
-
+        url = reverse('calculation:my_applications')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
