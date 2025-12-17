@@ -22,6 +22,9 @@
                 <div class="mb-4">
                     <h5 class="border-bottom pb-2">Account Settings</h5>
                     <div class="list-group">
+                        <a href="{% url 'account' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-user me-2"></i> My Account
+                        </a>
                         <a href="{% url 'change_password' %}" class="list-group-item list-group-item-action">
                             <i class="fas fa-key me-2"></i> Change Password
                         </a>
@@ -32,10 +35,10 @@
                 </div>
 
                 <div class="mb-4">
-                    <h5 class="border-bottom pb-2">Privacy Settings</h5>
+                    <h5 class="border-bottom pb-2">Privacy</h5>
                     <div class="list-group">
                         <a href="{% url 'privacy_settings' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-shield-alt me-2"></i> Manage Privacy Settings
+                            <i class="fas fa-shield-alt me-2"></i> Privacy Settings
                             <span class="badge bg-primary float-end">
                                 {% if request.session.profile_visible|default:True %}
                                     Public
@@ -46,33 +49,8 @@
                         </a>
                     </div>
                 </div>
-
-                <div class="mb-4">
-                    <h5 class="border-bottom pb-2">Display</h5>
-                    <div class="list-group">
-                        <a href="{% url 'font_settings' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-text-height me-2"></i> Font Size
-                            <span class="badge bg-primary float-end" id="current-font-badge">
-                                Loading...
-                            </span>
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-// Show current font size from localStorage
-document.addEventListener('DOMContentLoaded', function() {
-    const saved = localStorage.getItem('user_font_size') || '3';
-    const sizeNames = {
-        '1': 'Small',
-        '3': 'Medium', 
-        '5': 'Large'
-    };
-    document.getElementById('current-font-badge').textContent = sizeNames[saved] || 'Medium';
-});
-</script>
 {% endblock %}

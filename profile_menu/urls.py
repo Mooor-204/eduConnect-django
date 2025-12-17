@@ -9,5 +9,5 @@ urlpatterns = [
     path('change-password/', views.change_password_view, name='change_password'),
     path('notifications/', views.notifications_view, name='notifications'),
     path('privacy/', views.privacy_settings_view, name='privacy_settings'),
-    path('font-size/', views.font_settings_view, name='font_settings'),
+    
 ]

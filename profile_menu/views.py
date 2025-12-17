@@ -75,10 +75,6 @@ def privacy_settings_view(request):
     return render(request, 'profile_menu/privacy_settings.html')
 
 @login_required
-def font_settings_view(request):
-
-    return render(request, 'profile_menu/font_settings.html')
-@login_required
 def calendar_view(request):
     today = datetime.now()
     

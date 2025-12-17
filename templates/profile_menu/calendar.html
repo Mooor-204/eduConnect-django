@@ -16,8 +16,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    
-                    <!-- Month Navigation -->
+             
                     <div class="text-center mb-4">
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-primary">
@@ -30,9 +29,9 @@
                         </div>
                     </div>
                     
-                    <!-- Calendar Grid -->
+           
                     <div class="calendar-container">
-                        <!-- Weekday Headers -->
+                     
                         <div class="calendar-weekdays">
                             <div class="weekday text-danger">Sun</div>
                             <div class="weekday">Mon</div>
@@ -42,8 +41,7 @@
                             <div class="weekday">Fri</div>
                             <div class="weekday text-primary">Sat</div>
                         </div>
-                        
-                        <!-- Days Grid -->
+                       
                         <div class="calendar-days">
                             {% for week in calendar %}
                                 {% for day in week %}
@@ -73,7 +71,6 @@
                         </div>
                     </div>
                     
-                    <!-- Current Month's Deadlines List -->
                     <div class="mt-4">
                         <h5><i class="fas fa-list-check"></i> Deadlines for {{ month_name }}</h5>
                         {% if deadlines_by_day %}
