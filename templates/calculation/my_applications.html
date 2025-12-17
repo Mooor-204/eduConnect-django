@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block content %}
 <div class="container">
@@ -37,23 +37,23 @@
                             
                             {% if app.status == 'ACCEPTED' %}
                                 <span class="status-badge status-approved">
-                                    <i class="fas fa-check-circle"></i> ✅ Approved
+                                    <i class="fas fa-check-circle"></i> âœ… Approved
                                 </span>
                             {% elif app.status == 'REJECTED' %}
                                 <span class="status-badge status-rejected">
-                                    <i class="fas fa-times-circle"></i> ❌ Rejected
+                                    <i class="fas fa-times-circle"></i> âŒ Rejected
                                 </span>
                             {% elif app.status == 'UNDER_REVIEW' %}
                                 <span class="status-badge status-review">
-                                    <i class="fas fa-search"></i> 🔍 Under Review
+                                    <i class="fas fa-search"></i> ðŸ” Under Review
                                 </span>
                             {% elif app.status == 'SUBMITTED' %}
                                 <span class="status-badge status-submitted">
-                                    <i class="fas fa-paper-plane"></i> 📤 Submitted
+                                    <i class="fas fa-paper-plane"></i> ðŸ“¤ Submitted
                                 </span>
                             {% else %}
                                 <span class="status-badge status-pending">
-                                    <i class="fas fa-clock"></i> ⏳ {{ app.status|title }}
+                                    <i class="fas fa-clock"></i> â³ {{ app.status|title }}
                                 </span>
                             {% endif %}
                             
@@ -125,9 +125,9 @@
                                             <strong>Deadline:</strong> {{ app.test_deadline|date:"F d, Y" }}
                                             <span class="badge bg-{% if app.test_deadline|date:'Y-m-d' < today_str %}danger{% elif app.test_deadline|date:'Y-m-d' == today_str %}warning{% else %}secondary{% endif %} float-end">
                                                 {% if app.test_deadline|date:'Y-m-d' < today_str %}
-                                                    ⚠️ Overdue
+                                                    âš ï¸ Overdue
                                                 {% elif app.test_deadline|date:'Y-m-d' == today_str %}
-                                                    ⏰ Due today!
+                                                    â° Due today!
                                                 {% else %}
                                                     {{ app.test_deadline|timeuntil }} left
                                                 {% endif %}
@@ -146,7 +146,7 @@
                                     <i class="fas fa-check-circle"></i> Next Steps
                                 </div>
                                 <div class="card-body">
-                                    <h6>✅ Tests Completed on {{ app.test_completion_date|date:"F d, Y" }}</h6>
+                                    <h6>âœ… Tests Completed on {{ app.test_completion_date|date:"F d, Y" }}</h6>
                                     <ol class="mt-3">
                                         <li><strong>Review:</strong> University is checking your scores</li>
                                         <li><strong>Timeline:</strong> You'll get placement results in 3-5 days</li>
@@ -226,7 +226,7 @@
         padding: 8px 20px;
         border-radius: 20px;
         font-weight: bold;
-        font-size: 0.9rem;
+        
     }
     .status-pending { 
         background: #fff3cd; 
@@ -271,7 +271,7 @@
         color: #666;
     }
     .empty-state i {
-        font-size: 4rem;
+        
         color: #ddd;
         margin-bottom: 20px;
     }
@@ -288,7 +288,7 @@
     }
     .test-card p {
         color: #666;
-        font-size: 0.9rem;
+        
         margin-bottom: 10px;
     }
 </style>

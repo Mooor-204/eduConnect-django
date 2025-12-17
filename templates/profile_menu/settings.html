@@ -22,6 +22,9 @@
                 <div class="mb-4">
                     <h5 class="border-bottom pb-2">Account Settings</h5>
                     <div class="list-group">
+                        <a href="{% url 'account' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-user me-2"></i> My Account
+                        </a>
                         <a href="{% url 'change_password' %}" class="list-group-item list-group-item-action">
                             <i class="fas fa-key me-2"></i> Change Password
                         </a>
@@ -31,12 +34,11 @@
                     </div>
                 </div>
 
-                <!-- PRIVACY SETTINGS LINK -->
                 <div class="mb-4">
-                    <h5 class="border-bottom pb-2">Privacy Settings</h5>
+                    <h5 class="border-bottom pb-2">Privacy</h5>
                     <div class="list-group">
                         <a href="{% url 'privacy_settings' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-shield-alt me-2"></i> Manage Privacy Settings
+                            <i class="fas fa-shield-alt me-2"></i> Privacy Settings
                             <span class="badge bg-primary float-end">
                                 {% if request.session.profile_visible|default:True %}
                                     Public
@@ -47,42 +49,8 @@
                         </a>
                     </div>
                 </div>
-
-                <!-- FONT SIZE SETTINGS LINK -->
-                <div class="mb-4">
-                    <h5 class="border-bottom pb-2">Display</h5>
-                    <div class="list-group">
-                        <a href="{% url 'font_settings' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-text-height me-2"></i> Font Size
-                            <span class="badge bg-primary float-end">
-                                {% if request.session.font_size|default:'medium' == 'small' %}
-                                    Small
-                                {% elif request.session.font_size|default:'medium' == 'large' %}
-                                    Large
-                                {% elif request.session.font_size|default:'medium' == 'xlarge' %}
-                                    Extra Large
-                                {% else %}
-                                    Medium
-                                {% endif %}
-                            </span>
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Apply font size if set -->
-<style>
-{% if request.session.font_size == 'small' %}
-    body { font-size: 14px; }
-{% elif request.session.font_size == 'large' %}
-    body { font-size: 18px; }
-{% elif request.session.font_size == 'xlarge' %}
-    body { font-size: 20px; }
-{% else %}
-    body { font-size: 16px; }
-{% endif %}
-</style>
 {% endblock %}

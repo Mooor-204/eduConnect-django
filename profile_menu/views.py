@@ -75,15 +75,6 @@ def privacy_settings_view(request):
     return render(request, 'profile_menu/privacy_settings.html')
 
 @login_required
-def font_settings_view(request):
-    if request.method == 'POST':
-        font_size = request.POST.get('font_size', 'medium')
-        request.session['font_size'] = font_size
-        messages.success(request, f'Font size changed to {font_size}')
-        return redirect('settings')
-    return render(request, 'profile_menu/font_settings.html')
-
-@login_required
 def calendar_view(request):
     today = datetime.now()
     
