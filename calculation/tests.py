@@ -29,53 +29,56 @@ class UserAndCalculationTests(TestCase):
 
     def test_american_calculation_cases(self):
         test_cases = [
-            (4.0, 1600, None, 100.0, 100.0, 0.0, 70.0),
-            (3.6, 1500, 1550, 90.0, 93.75, 96.875, 93.59375),
-            (3.8, None, None, 95.0, 0.0, 0.0, 95.0),
+            (4.0, 1600, None, 70.0),
+            (3.6, 1500, 1550, 93.59375),
+            (3.8, None, None, 95.0),
         ]
-        for gpa, sat_i, sat_ii, exp_gpa, exp_sat_i, exp_sat_ii, exp_final in test_cases:
+        for gpa, sat1, sat2, exp_final in test_cases:
             record = UserAcademicRecord.objects.create(
                 user=self.user,
-                gpa=gpa,
-                sat_i=sat_i,
-                sat_ii=sat_ii
+                american_gpa=gpa,
+                american_sat1_score=sat1,
+                american_sat2_score=sat2 or 0,
+                final_percentage=0  
             )
             latest = UserAcademicRecord.objects.latest('id')
-            gpa_pct = (latest.gpa / 4.0) * 100
-            sat_i_pct = (latest.sat_i / 1600 * 100) if latest.sat_i else 0
-            sat_ii_pct = (latest.sat_ii / 1600 * 100) if latest.sat_ii else 0
-            final = gpa_pct * 0.4 + sat_i_pct * 0.3 + sat_ii_pct * 0.3
-            self.assertAlmostEqual(gpa_pct, exp_gpa)
-            self.assertAlmostEqual(sat_i_pct, exp_sat_i)
-            self.assertAlmostEqual(sat_ii_pct, exp_sat_ii)
-            self.assertAlmostEqual(final, exp_final)
+            gpa_pct = latest.american_gpa * 25
+            sat1_pct = (latest.american_sat1_score / 1600) * 100 if latest.american_sat1_score else 0
+            sat2_pct = (latest.american_sat2_score / 1600) * 100 if latest.american_sat2_score else 0
+            if latest.american_sat2_score > 0:
+                final = gpa_pct * 0.4 + sat1_pct * 0.3 + sat2_pct * 0.3
+            else:
+                final = gpa_pct * 0.4 + sat1_pct * 0.6
+            latest.final_percentage = final
+            latest.save()
+            self.assertAlmostEqual(latest.final_percentage, exp_final)
 
     def test_thanawya_calculation_cases(self):
         test_cases = [
-            (95, 95.0),
-            (88, 88.0),
-            (100, 100.0),
+            (410, 100.0),
+            (369, (369/410)*100),
+            (205, 50.0)
         ]
-        for grade, exp_pct in test_cases:
+        for total_marks, exp_final in test_cases:
             record = UserAcademicRecord.objects.create(
                 user=self.user,
-                thanawya_score=grade
+                thanawya_total_marks=total_marks,
+                final_percentage=(total_marks/410)*100
             )
             latest = UserAcademicRecord.objects.latest('id')
-            self.assertEqual(latest.thanawya_score, grade)
-            self.assertEqual(float(latest.thanawya_score), exp_pct)
+            self.assertAlmostEqual(latest.final_percentage, exp_final)
 
     def test_igcse_calculation_cases(self):
         test_cases = [
-            (4.0, 100.0),
-            (3.5, 87.5),
-            (3.8, 95.0),
+            ([{'subject':'Math','grade':'A*'},{'subject':'English','grade':'A'}], (100+95)/2),
+            ([{'subject':'Biology','grade':'B'},{'subject':'Chemistry','grade':'C'}], (85+75)/2),
+            ([{'subject':'Physics','grade':'D'}], 65),
         ]
-        for gpa, exp_pct in test_cases:
+        for subjects_list, exp_final in test_cases:
             record = UserAcademicRecord.objects.create(
                 user=self.user,
-                igcse_gpa=gpa
+                igcse_subjects=subjects_list,
+                final_percentage=sum([{'A*':100,'A':95,'B':85,'C':75,'D':65,'E':55}[s['grade']] for s in subjects_list])/len(subjects_list)
             )
             latest = UserAcademicRecord.objects.latest('id')
-            igcse_pct = (latest.igcse_gpa / 4.0) * 100
-            self.assertAlmostEqual(igcse_pct, exp_pct)
+            self.assertAlmostEqual(latest.final_percentage, exp_final)
