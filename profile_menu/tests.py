@@ -16,13 +16,13 @@ class ChangePasswordTests(TestCase):
         self.client.login(username='testuser', password='old_password123')
 
     def test_password_change_page_accessible(self):
-        url = reverse('change_password')  # replace with your URL name
+        url = reverse('change_password')  
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<form')  # check the form exists
+        self.assertContains(response, '<form')  
 
     def test_password_change_success(self):
-        url = reverse('change_password')  # replace with your URL name
+        url = reverse('change_password')  
         response = self.client.post(url, {
             'old_password': 'old_password123',
             'new_password1': 'NewStrongPass123',
@@ -31,13 +31,13 @@ class ChangePasswordTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Your password was successfully updated!')
 
-        # Check that the user can login with the new password
+        
         self.client.logout()
         login = self.client.login(username='testuser', password='NewStrongPass123')
         self.assertTrue(login)
 
     def test_password_change_invalid(self):
-        url = reverse('change_password')  # replace with your URL name
+        url = reverse('change_password')  
         response = self.client.post(url, {
             'old_password': 'wrong_old_password',
             'new_password1': 'NewStrongPass123',

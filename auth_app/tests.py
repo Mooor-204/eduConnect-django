@@ -21,12 +21,12 @@ class AuthAppTests(TestCase):
             'password1': 'newpassword123',
             'password2': 'newpassword123'
         })
-        self.assertEqual(response.status_code, 302)  # Should redirect to home
+        self.assertEqual(response.status_code, 302)  
         self.assertTrue(User.objects.filter(username='newuser').exists())
 
     def test_signup_view_post_failure(self):
         response = self.client.post(reverse('signup'), {
-            'username': '',  # Missing username
+            'username': '', 
             'password1': 'password123',
             'password2': 'password123'
         })
@@ -43,7 +43,7 @@ class AuthAppTests(TestCase):
             'username': self.username,
             'password': self.password
         })
-        self.assertEqual(response.status_code, 302)  # Redirects to home
+        self.assertEqual(response.status_code, 302)  
         self.assertTrue('_auth_user_id' in self.client.session)
 
     def test_login_view_post_failure(self):
@@ -55,8 +55,8 @@ class AuthAppTests(TestCase):
         self.assertContains(response, 'Invalid username or password.')
 
     def test_logout_view(self):
-        # First log in
+        
         self.client.login(username=self.username, password=self.password)
         response = self.client.get(reverse('logout'))
-        self.assertEqual(response.status_code, 302)  # Redirects to home
+        self.assertEqual(response.status_code, 302) 
         self.assertFalse('_auth_user_id' in self.client.session)
