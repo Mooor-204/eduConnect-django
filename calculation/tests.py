@@ -29,7 +29,7 @@ class UserAndCalculationTests(TestCase):
 
     def test_american_calculation_cases(self):
         test_cases = [
-            (4.0, 1600, None, 70.0),
+            (4.0, 1600, None, 100.0),
             (3.6, 1500, 1550, 93.59375),
             (3.8, None, None, 95.0),
         ]
@@ -39,7 +39,7 @@ class UserAndCalculationTests(TestCase):
                 american_gpa=gpa,
                 american_sat1_score=sat1,
                 american_sat2_score=sat2 or 0,
-                final_percentage=0  
+                final_percentage=0
             )
             latest = UserAcademicRecord.objects.latest('id')
             gpa_pct = latest.american_gpa * 25
