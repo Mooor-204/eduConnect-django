@@ -15,7 +15,6 @@ def account_view(request):
 def settings_view(request):
     context = {
         'profile_visible': request.session.get('profile_visible', True),
-        'font_size': request.session.get('font_size', 'medium'),
     }
     return render(request, 'profile_menu/settings.html', context)
 
