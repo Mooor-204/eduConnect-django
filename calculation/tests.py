@@ -1,50 +1,106 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
-from universities.models import Faculty
-from calculation.models import Application
+from calculation.models import UserAcademicRecord
 
-class CalculationViewsTest(TestCase):
+
+class CalculationAccuracyTests(TestCase):
+
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='password')
-        self.client.login(username='testuser', password='password')
-        self.faculty = Faculty.objects.create(
-            name="Test Faculty",
-            fees=10000
+        self.user = User.objects.create_user(
+            username='calcuser',
+            password='password123'
+        )
+        self.client.login(username='calcuser', password='password123')
+
+    def test_thanawya_percentage_calculation(self):
+        """
+        410 total marks = 100%
+        205 marks = 50%
+        """
+        self.client.post(
+            reverse('calculation:thanawya_calc'),
+            {'total_marks': 205}
         )
 
-    def test_calculator_home_view(self):
-        url = reverse('calculation:calculator_home')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        record = UserAcademicRecord.objects.latest('id')
+        expected_percentage = (205 / 410) * 100
 
-    def test_thanawya_view(self):
-        url = reverse('calculation:thanawya_calc')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertAlmostEqual(
+            record.final_percentage,
+            expected_percentage,
+            places=2
+        )
 
-    def test_american_view(self):
-        url = reverse('calculation:american_calc')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+    def test_american_calculation_without_sat2(self):
+        """
+        GPA = 4.0 → 100%
+        SAT I = 1600 → 100%
+        Formula: (GPA% × 0.4) + (SAT I% × 0.6)
+        Expected = 100%
+        """
+        self.client.post(
+            reverse('calculation:american_calc'),
+            {
+                'gpa': 4.0,
+                'sat1_score': 1600,
+                'sat2_score': 0
+            }
+        )
 
-    def test_igcse_view(self):
-        url = reverse('calculation:igcse_calc')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        record = UserAcademicRecord.objects.latest('id')
+        expected_percentage = (100 * 0.4) + (100 * 0.6)
 
-    def test_calculation_results_view(self):
-        url = reverse('calculation:calculation_results', kwargs={'percentage': '85'})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertAlmostEqual(
+            record.final_percentage,
+            expected_percentage,
+            places=2
+        )
 
-    def test_apply_to_faculty_view(self):
-        url = reverse('calculation:apply_faculty', kwargs={'faculty_id': self.faculty.id})
-        response = self.client.get(url, follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(Application.objects.filter(user=self.user, faculty=self.faculty).exists())
+    def test_american_calculation_with_sat2(self):
+        """
+        GPA = 4.0 → 100%
+        SAT I = 1600 → 100%
+        SAT II = 1600 → 100%
+        Formula: 40% + 30% + 30%
+        """
+        self.client.post(
+            reverse('calculation:american_calc'),
+            {
+                'gpa': 4.0,
+                'sat1_score': 1600,
+                'sat2_score': 1600
+            }
+        )
 
-    def test_my_applications_view(self):
-        url = reverse('calculation:my_applications')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        record = UserAcademicRecord.objects.latest('id')
+        expected_percentage = (100 * 0.4) + (100 * 0.3) + (100 * 0.3)
+
+        self.assertAlmostEqual(
+            record.final_percentage,
+            expected_percentage,
+            places=2
+        )
+
+    def test_igcse_average_calculation(self):
+        """
+        A = 95
+        B = 85
+        C = 75
+        Average = (95 + 85 + 75) / 3 = 85
+        """
+        self.client.post(
+            reverse('calculation:igcse_calc'),
+            {
+                'subjects': 'Math:A\nPhysics:B\nChemistry:C'
+            }
+        )
+
+        record = UserAcademicRecord.objects.latest('id')
+        expected_percentage = (95 + 85 + 75) / 3
+
+        self.assertAlmostEqual(
+            record.final_percentage,
+            expected_percentage,
+            places=2
+        )
