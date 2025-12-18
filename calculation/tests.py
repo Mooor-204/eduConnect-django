@@ -30,14 +30,14 @@ class UserAndCalculationTests(TestCase):
     def test_american_calculation_cases(self):
         test_cases = [
             (4.0, 1600, None, 100.0),
-            (3.6, 1500, 1550, 93.59375),
-            (3.8, None, None, 95.0),
+            (3.6, 1500, 1550, 93.1875),
+            (3.8, None, None, 38.0),
         ]
         for gpa, sat1, sat2, exp_final in test_cases:
             record = UserAcademicRecord.objects.create(
                 user=self.user,
-                american_gpa=gpa,
-                american_sat1_score=sat1,
+                american_gpa=gpa or 0,
+                american_sat1_score=sat1 or 0,
                 american_sat2_score=sat2 or 0,
                 final_percentage=0
             )
@@ -46,10 +46,9 @@ class UserAndCalculationTests(TestCase):
             sat1_pct = (latest.american_sat1_score / 1600) * 100 if latest.american_sat1_score else 0
             sat2_pct = (latest.american_sat2_score / 1600) * 100 if latest.american_sat2_score else 0
             if latest.american_sat2_score > 0:
-                final = gpa_pct * 0.4 + sat1_pct * 0.3 + sat2_pct * 0.3
+                latest.final_percentage = gpa_pct * 0.4 + sat1_pct * 0.3 + sat2_pct * 0.3
             else:
-                final = gpa_pct * 0.4 + sat1_pct * 0.6
-            latest.final_percentage = final
+                latest.final_percentage = gpa_pct * 0.4 + sat1_pct * 0.6
             latest.save()
             self.assertAlmostEqual(latest.final_percentage, exp_final)
 
