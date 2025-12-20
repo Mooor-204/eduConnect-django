@@ -1,4 +1,4 @@
-name: Django All App Tests
+name: Django All 
 
 on:
   push:
