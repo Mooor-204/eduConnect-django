@@ -11,13 +11,8 @@ EduConnect is a comprehensive system that allows students to discover and apply 
 [![Django Tests](https://github.com/Mooor-204/eduConnect-django/actions/workflows/django-tests.yml/badge.svg)](https://github.com/Mooor-204/eduConnect-django/actions/workflows/django-tests.yml)
 
 ### Deployment Information
-The application is production-ready and can be deployed to any cloud platform (Heroku, Railway, AWS, etc.). The CI/CD pipeline ensures code quality with automated testing on every commit.
+The application is production-ready and can be deployed to any platform. The CI/CD pipeline ensures code quality with automated testing on every commit.
 
-**Quick Deployment:**
-1. Set production environment variables
-2. Run `python manage.py collectstatic`
-3. Deploy using the provided configuration files
-4. Monitor via GitHub Actions dashboard
 
 ## Features
 - **3 Calculators** - Check your score for each education system
