@@ -1,4 +1,4 @@
-name: Django Tests
+name: Django auth_app Tests
 
 on:
   push:
@@ -13,18 +13,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-    - name: Set up Python
+    - name: Set up Python 3.11
       uses: actions/setup-python@v4
       with:
         python-version: 3.11
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    - name: Run Django tests
-      run: |
-        python manage.py test auth_app
+    - name: Run auth_app tests
+      run: python manage.py test auth_app
